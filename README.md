@@ -67,6 +67,7 @@ $ pip install lbl2vec
     
 Usage
 -----
+For detailed information view the [Lbl2Vec API Guide](https://lbl2vec.readthedocs.io/en/latest/api.html#).
 
 ``` 
 from lbl2vec import Lbl2Vec
