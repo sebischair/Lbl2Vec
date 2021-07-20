@@ -29,5 +29,7 @@ setuptools.setup(
             'scikit-learn >= 0.24.2',
             'psutil >= 5.8.0'
         ],
+    package_dir={"": "."},
+    packages=setuptools.find_packages(where="."),
     python_requires='>=3.8',
 )

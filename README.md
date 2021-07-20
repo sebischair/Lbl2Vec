@@ -62,16 +62,17 @@ Installation
 ------------
 
 ```
-$ pip install lbl2vec
+pip install lbl2vec
 ```
     
 Usage
 -----
-For detailed information view the [Lbl2Vec API Guide](https://lbl2vec.readthedocs.io/en/latest/api.html#).
+For detailed information visit the [Lbl2Vec API Guide](https://lbl2vec.readthedocs.io/en/latest/api.html#) and the [examples](https://github.com/sebischair/Lbl2Vec/tree/main/examples).
 
 ``` 
 from lbl2vec import Lbl2Vec
 ```
+
 ### Learn new model from scratch
 >Learns word vectors, document vectors and label vectors from scratch during Lbl2Vec model training.
 
@@ -125,3 +126,13 @@ model.predict_new_docs(tagged_docs=tagged_docs)
 **Important parameters:**
 
 * `tagged_docs`: iterable list of [gensim.models.doc2vec.TaggedDocument](https://radimrehurek.com/gensim/models/doc2vec.html#gensim.models.doc2vec.TaggedDocument) elements
+
+### Save model to disk
+``` 
+model.save('model_name')
+``` 
+
+### Load model from disk
+``` 
+model = Lbl2Vec.load('model_name')
+``` 

@@ -54,7 +54,6 @@ sh.setFormatter(logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(sh)
 
-# ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
 class Lbl2Vec:
     '''
     Lbl2Vec
@@ -69,12 +68,12 @@ class Lbl2Vec:
             For each label at least one descriptive keyword has to be added as list of str.
 
     tagged_documents : iterable list of `gensim.models.doc2vec.TaggedDocument`_ elements, optional
-            If you wish to train a new Doc2Vec model this parameter can not be None, whereas the :class:`doc2vec_model` parameter must be None. If you use a pre-trained Doc2Vec model this parameter has to be None.
+            If you wish to train word and document vectors from scratch this parameter can not be None, whereas the :class:`doc2vec_model` parameter must be None. If you use a pretrained Doc2Vec model to load its learned word and document vectors this parameter has to be None.
             Input corpus, can be simply a list of elements, but for larger corpora, consider an iterable that streams
             the documents directly from disk/network.
 
     label_names : iterable list of str, optional
-            Custom names can be defined for each label. Default is to use generic label names.
+            Custom names can be defined for each label. Parameter values of label names and keywords of the same topic must have the same index. Default is to use generic label names.
 
     epochs : int, optional
             Number of iterations (epochs) over the corpus.
@@ -102,17 +101,17 @@ class Lbl2Vec:
             If set to -1, use all available worker threads of the machine.
 
     doc2vec_model : `gensim.models.doc2vec.Doc2Vec`_, optional
-            If given a pretrained Doc2Vec model, Lbl2Vec uses the pretrained Doc2Vec model from this parameter. If this parameter is defined, :class:`tagged_documents` has to be None.
+            If given a pretrained Doc2Vec model, Lbl2Vec uses its word and document vectors to compute the label vectors. If this parameter is defined, :class:`tagged_documents` has to be None.
             In order to get optimal Lbl2Vec results the given Doc2Vec model should be trained with the parameters "dbow_words=1" and "dm=0".
 
     num_docs : int, optional
             Maximum number of documents to calculate label embedding from. Default is all available documents.
 
-    similarity_treshold : float, optional
-            Only documents with a higher similarity to the respective description keywords than this treshold are used to calculate the label embedding.
+    similarity_threshold : float, optional
+            Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embedding.
 
     min_num_docs : int, optional
-            Minimum number of documents that are used to calculate the label embedding. Adds documents until requirement is fulfilled if simiarilty treshold is choosen too restrictive.
+            Minimum number of documents that are used to calculate the label embedding. Adds documents until requirement is fulfilled if simiarilty threshold is choosen too restrictive.
             This value should be chosen to be at least 1 in order to be able to calculate the label embedding.
             If this value is < 1 it can happen that no document is selected for label embedding calculation and therefore no label embedding is generated.
 
@@ -139,7 +138,7 @@ class Lbl2Vec:
             workers=-1,
             doc2vec_model=None,
             num_docs=None,
-            similarity_treshold=0.45,
+            similarity_threshold=0.45,
             min_num_docs=1,
             clean_outlier=True,
             verbose=True):
@@ -199,7 +198,7 @@ class Lbl2Vec:
         self.negative = negative
         self.doc2vec_model = doc2vec_model
         self.num_docs = num_docs
-        self.similarity_treshold = similarity_treshold
+        self.similarity_threshold = similarity_threshold
         self.min_num_docs = min_num_docs
 
         # show or hide logging according to parameter setting
@@ -249,14 +248,14 @@ class Lbl2Vec:
         # get doc keys and similarity scores of documents that are similar to
         # the description keywords
         self.labels[['doc_keys', 'doc_similarity_scores']] = self.labels['description_keywords'].apply(lambda row: self._get_similar_documents(
-            self.doc2vec_model, row, num_docs=self.num_docs, similarity_treshold=self.similarity_treshold, min_num_docs=self.min_num_docs))
+            self.doc2vec_model, row, num_docs=self.num_docs, similarity_threshold=self.similarity_threshold, min_num_docs=self.min_num_docs))
 
         # validate that documents to calculate label embeddings from are found
         # for all labels
         if len(self.labels[self.labels['doc_keys'].str.len() != 0]) != len(
                 self.labels):
             raise ValueError(
-                'The model could not find documents to calculate label embeddings from for each label. Either lower the "similarity_treshold" parameter or set the "num_docs" parameter > 0')
+                'The model could not find documents to calculate label embeddings from for each label. Either lower the "similarity_threshold" parameter or set the "num_docs" parameter > 0')
 
         # get document vectors from document keys
         self.labels['doc_vectors'] = self.labels['doc_keys'].apply(
@@ -299,7 +298,7 @@ class Lbl2Vec:
 
         Returns
         -------
-        labeled_docs : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels.
+        labeled_docs : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels. The similarity scores consist of cosine similarities and therefore have a value range of [-1,1].
         '''
         # define column names for document keys, most similar label, highest
         # similarity score and prediction confidence
@@ -329,6 +328,7 @@ class Lbl2Vec:
 
         logger.info('Calculate document<->label similarities')
 
+        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get similarity scores of documents for each label
         if multiprocessing:
             labeled_docs[
@@ -405,7 +405,7 @@ class Lbl2Vec:
 
         Returns
         -------
-        labeled_docs : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels.
+        labeled_docs : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels. The similarity scores consist of cosine similarities and therefore have a value range of [-1,1].
         '''
         # validate tagged_documents
         if (not all((isinstance(i, TaggedDocument)) for i in tagged_docs)):
@@ -428,6 +428,7 @@ class Lbl2Vec:
 
         logger.info('Calculate document embeddings')
 
+        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get document vectors of new documents
         if multiprocessing:
             labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].swifter.progress_bar(
@@ -441,6 +442,7 @@ class Lbl2Vec:
 
         logger.info('Calculate document<->label similarities')
 
+        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get similarity scores of documents for each label
         if multiprocessing:
             labeled_docs[
@@ -499,21 +501,21 @@ class Lbl2Vec:
             
         return labeled_docs
 
-    def add_lbl_tresholds(
+    def add_lbl_thresholds(
             self,
             lbl_similarities_df: pd.DataFrame,
-            lbl_tresholds: list,
+            lbl_thresholds: list,
             multiprocessing=True) -> pd.DataFrame:
         '''
-        Adds treshold column with the treshold value of the most similar classification label.
+        Adds threshold column with the threshold value of the most similar classification label.
 
         Parameters
         ----------
         lbl_similarities_df : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels.
             This `pandas.DataFrame`_ type is returned by the :class:`predict_model_docs()` and :class:`predict_new_docs()` functions.
 
-        lbl_tresholds : list of tuples
-            First tuple element consists of the label name and the second tuple element of the treshold value.
+        lbl_thresholds : list of tuples
+            First tuple element consists of the label name and the second tuple element of the threshold value.
 
         multiprocessing : boolean, optional
             Whether to use the swifter multiprocessing library during prediction.
@@ -522,12 +524,12 @@ class Lbl2Vec:
 
         Returns
         -------
-        lbl_similarities_df : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label, fourth column of the label treshold values and the following columns with the respective labels and the similarity scores of the documents to the labels.
+        lbl_similarities_df : `pandas.DataFrame`_ with first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label, fourth column of the label threshold values and the following columns with the respective labels and the similarity scores of the documents to the labels.
         '''
-        # validate lbl_tresholds
-        if len(lbl_tresholds) != self.labels.shape[0]:
+        # validate lbl_threshold
+        if len(lbl_thresholds) != self.labels.shape[0]:
             raise ValueError(
-                'Tresholds list must be the same length as the keywords list')
+                'Threshold list must be the same length as the keywords list')
 
         # validate pandas DataFrame by first three column names
         columns_names = [
@@ -537,21 +539,22 @@ class Lbl2Vec:
         if not (lbl_similarities_df.columns[:3] == columns_names).all():
             raise ValueError('The pandas DataFrame must have a first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels')
 
-        # add treshold column with the treshold value of the respective most
+        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
+        # add threshold column with the threshold value of the respective most
         # similar classification label
         if multiprocessing:
-            lbl_similarities_df['lbl_treshold'] = lbl_similarities_df['most_similar_label'].swifter.apply(
-                lambda x: lbl_tresholds[[element[0] for element in lbl_tresholds].index(x)][1])
+            lbl_similarities_df['lbl_threshold'] = lbl_similarities_df['most_similar_label'].swifter.progress_bar(
+                False).apply(lambda x: lbl_thresholds[[element[0] for element in lbl_thresholds].index(x)][1])
         else:
-            lbl_similarities_df['lbl_treshold'] = lbl_similarities_df['most_similar_label'].apply(
-                lambda x: lbl_tresholds[[element[0] for element in lbl_tresholds].index(x)][1])
+            lbl_similarities_df['lbl_threshold'] = lbl_similarities_df['most_similar_label'].apply(
+                lambda x: lbl_thresholds[[element[0] for element in lbl_thresholds].index(x)][1])
 
         # reorder columns
         first_columns = [
             'doc_key',
             'most_similar_label',
             'highest_similarity_score',
-            'lbl_treshold']
+            'lbl_threshold']
         following_columns = [
             e for e in lbl_similarities_df.columns.tolist() if e not in first_columns]
         column_order = first_columns + following_columns
@@ -564,7 +567,7 @@ class Lbl2Vec:
                 Doc2Vec()),
             keywords: list,
             num_docs: int,
-            similarity_treshold: float,
+            similarity_threshold: float,
             min_num_docs: int) -> pd.Series:
         '''
         Computes document keys and similarity scores of documents that are similar to given description keywords.
@@ -579,11 +582,11 @@ class Lbl2Vec:
         num_docs : int, optional
             Maximum number of documents to return. Default is all available documents.
 
-        similarity_treshold : float, optional
-            Only documents with a similarity score above this treshold are returned.
+        similarity_threshold : float, optional
+            Only documents with a similarity score above this threshold are returned.
 
         min_num_docs : int, optional
-            Minimum number of documents to return. Adds documents until requirement is fulfilled if simiarilty treshold is choosen to restrictive.
+            Minimum number of documents to return. Adds documents until requirement is fulfilled if similarity threshold is choosen to restrictive.
             This value should be chosen to be at least 1 in order to be able to calculate the label embedding.
             If this value is < 1 it can happen that no document is selected for label embedding calculation and therefore no label embedding is generated.
 
@@ -631,19 +634,19 @@ class Lbl2Vec:
             doc_scores = [docs[1] for docs in similar_docs]
 
             # add number of min_num_docs documents if too few documents are
-            # chosen by simiarilty treshold alone
-            if min_num_docs is not None and doc_scores[min_num_docs] < similarity_treshold and len(
+            # chosen by simiarilty threshold alone
+            if min_num_docs is not None and doc_scores[min_num_docs] < similarity_threshold and len(
                     doc2vec_model.dv.index_to_key) >= min_num_docs:
                 return_docs_similarity_scores = doc_scores[:min_num_docs]
                 return_docs_keys = doc_keys[:min_num_docs]
 
             else:
 
-                if similarity_treshold is not None:
+                if similarity_threshold is not None:
                     # get only topics with similarity score >
-                    # similarity_treshold
+                    # similarity_threshold
                     for i in range(num_docs):
-                        if doc_scores[i] <= similarity_treshold:
+                        if doc_scores[i] <= similarity_threshold:
                             break
                         return_docs_keys.append(doc_keys[i])
                         return_docs_similarity_scores.append(doc_scores[i])
