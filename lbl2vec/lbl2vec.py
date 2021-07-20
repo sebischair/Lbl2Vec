@@ -1,7 +1,7 @@
 """
 BSD 3-Clause License
 
-Copyright (c) 2021, Tim Schopf
+Copyright (c) 2021, Tim Schopf - sebis - TUM - Germany
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
