@@ -1,3 +1,7 @@
+[![](https://img.shields.io/pypi/v/lbl2vec.svg)](https://pypi.org/project/lbl2vec/)
+[![](https://img.shields.io/pypi/l/lbl2vec.svg)](https://github.com/sebischair/Lbl2Vec/blob/main/LICENSE)
+[![Documentation Status](https://readthedocs.org/projects/lbl2vec/badge/?version=latest)](https://lbl2vec.readthedocs.io/en/latest/?badge=latest)
+
 Lbl2Vec
 ======= 
 

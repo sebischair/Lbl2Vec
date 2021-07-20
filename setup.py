@@ -5,12 +5,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name='lbl2vec',
-    version='1.0',
+    version='1.0.1',
     url='https://github.com/sebischair/Lbl2Vec',
     license='BSD 3-Clause "New" or "Revised" License',
     author='Tim Schopf',
     author_email='tim.schopf@tum.de',
     description='Lbl2Vec learns jointly embedded label, document and word vectors to retrieve documents with predefined topics from an unlabeled document corpus.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[
             "Development Status :: 3 - Alpha",
             "Programming Language :: Python :: 3",
