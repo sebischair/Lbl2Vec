@@ -11,6 +11,8 @@ Lbl2Vec is an algorithm for **unsupervised document classification** and **unsup
 * Get similarity scores for documents to each predefined topic.
 * Get most similar predefined topic of documents.
 
+See the [paper](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058) for more details on how it works.
+
 Benefits
 --------
 
