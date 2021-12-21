@@ -142,3 +142,22 @@ model.save('model_name')
 ``` 
 model = Lbl2Vec.load('model_name')
 ``` 
+
+Citing Lbl2Vec
+--------
+
+When citing [Lbl2Vec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058) in academic papers and theses, please use this BibTeX entry:
+``` 
+@conference{webist21,
+author={Tim Schopf. and Daniel Braun. and Florian Matthes.},
+title={Lbl2Vec: An Embedding-based Approach for Unsupervised Document Retrieval on Predefined Topics},
+booktitle={Proceedings of the 17th International Conference on Web Information Systems and Technologies - WEBIST,},
+year={2021},
+pages={124-132},
+publisher={SciTePress},
+organization={INSTICC},
+doi={10.5220/0010710300003058},
+isbn={978-989-758-536-4},
+issn={2184-3252},
+}
+``` 
