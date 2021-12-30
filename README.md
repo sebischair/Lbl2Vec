@@ -13,6 +13,8 @@ Lbl2Vec is an algorithm for **unsupervised document classification** and **unsup
 
 See the [paper](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058) for more details on how it works.
 
+Corresponding Medium post describing the use of Lbl2Vec for unsupervised text classification can be found [here](https://towardsdatascience.com/unsupervised-text-classification-with-lbl2vec-6c5e040354de).
+
 Benefits
 --------
 
