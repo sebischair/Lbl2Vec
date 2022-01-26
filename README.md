@@ -1,6 +1,8 @@
-[![](https://img.shields.io/pypi/v/lbl2vec.svg)](https://pypi.org/project/lbl2vec/)
-[![](https://img.shields.io/pypi/l/lbl2vec.svg)](https://github.com/sebischair/Lbl2Vec/blob/main/LICENSE)
+[![Python version](https://img.shields.io/badge/python-%3E%3D3.8-orange)](https://pypi.org/project/lbl2vec/)
+[![Pypi](https://img.shields.io/pypi/v/lbl2vec.svg)](https://pypi.org/project/lbl2vec/)
+[![License](https://img.shields.io/pypi/l/lbl2vec.svg)](https://github.com/sebischair/Lbl2Vec/blob/main/LICENSE)
 [![Documentation Status](https://readthedocs.org/projects/lbl2vec/badge/?version=latest)](https://lbl2vec.readthedocs.io/en/latest/?badge=latest)
+[![DOI:10.5220/0010710300003058](https://zenodo.org/badge/DOI/10.5220/0010710300003058.svg)](https://doi.org/10.5220/0010710300003058)
 
 Lbl2Vec
 ======= 
