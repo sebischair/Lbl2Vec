@@ -153,7 +153,7 @@ Citing Lbl2Vec
 When citing [Lbl2Vec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058) in academic papers and theses, please use this BibTeX entry:
 ``` 
 @conference{webist21,
-author={Tim Schopf. and Daniel Braun. and Florian Matthes.},
+author={Tim Schopf and Daniel Braun and Florian Matthes},
 title={Lbl2Vec: An Embedding-based Approach for Unsupervised Document Retrieval on Predefined Topics},
 booktitle={Proceedings of the 17th International Conference on Web Information Systems and Technologies - WEBIST,},
 year={2021},
