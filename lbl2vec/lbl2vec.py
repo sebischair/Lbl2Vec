@@ -627,7 +627,11 @@ class Lbl2Vec:
                     similar_docs = doc2vec_model.dv.most_similar(
                         positive=keywordword_vectors, topn=num_docs)
                 else:
+                    return_docs_keys=[0]*num_docs
+                    return_docs_similarity_scores=[0]*num_docs
                     logger.warning("No keywords found in this document")
+                    return pd.Series([return_docs_keys, return_docs_similarity_scores], index=[
+                             'doc_keys', 'doc_similarity_scores'])
             except KeyError as error:
                 error.args = (
                     error.args[0] + " in trained Doc2Vec model. Either replace the keyword from the 'keywords_list' parameter or train a new Doc2Vec model that knows the keyword.",) + error.args[1:]
