@@ -623,8 +623,11 @@ class Lbl2Vec:
                 # the list
                 keywordword_vectors = [doc2vec_model.wv[word]
                                        for word in cleaned_keywords_list]
-                similar_docs = doc2vec_model.dv.most_similar(
-                    positive=keywordword_vectors, topn=num_docs)
+                if keywordword_vectors != []:
+                    similar_docs = doc2vec_model.dv.most_similar(
+                        positive=keywordword_vectors, topn=num_docs)
+                else:
+                    logger.warning("No keywords found in this document")
             except KeyError as error:
                 error.args = (
                     error.args[0] + " in trained Doc2Vec model. Either replace the keyword from the 'keywords_list' parameter or train a new Doc2Vec model that knows the keyword.",) + error.args[1:]
