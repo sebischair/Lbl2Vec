@@ -431,10 +431,12 @@ class Lbl2Vec:
         # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get document vectors of new documents
         if multiprocessing:
+
             labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].swifter.progress_bar(
                 False).apply(lambda row: self.doc2vec_model.infer_vector(doc_words=row))
 
         else:
+
             labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].apply(
                 lambda row: self.doc2vec_model.infer_vector(doc_words=row))
 
@@ -637,6 +639,7 @@ class Lbl2Vec:
                 error.args = (
                     error.args[0] + " in trained Doc2Vec model. Either replace the keyword from the 'keywords_list' parameter or train a new Doc2Vec model that knows the keyword.",) + error.args[1:]
                 raise
+
 
             doc_keys = [docs[0] for docs in similar_docs]
             doc_scores = [docs[1] for docs in similar_docs]
