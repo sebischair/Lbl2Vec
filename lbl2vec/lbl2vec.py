@@ -643,7 +643,7 @@ class Lbl2Vec:
 
             doc_keys = [docs[0] for docs in similar_docs]
             doc_scores = [docs[1] for docs in similar_docs]
-            print(doc_scores, min_num_docs)
+            # print(doc_scores, min_num_docs)
             # add number of min_num_docs documents if too few documents are
             # chosen by simiarilty threshold alone
             if min_num_docs is not None and doc_scores[min_num_docs] < similarity_threshold and len(
