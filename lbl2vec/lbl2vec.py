@@ -431,10 +431,12 @@ class Lbl2Vec:
         # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get document vectors of new documents
         if multiprocessing:
+
             labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].swifter.progress_bar(
                 False).apply(lambda row: self.doc2vec_model.infer_vector(doc_words=row))
 
         else:
+
             labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].apply(
                 lambda row: self.doc2vec_model.infer_vector(doc_words=row))
 
@@ -623,16 +625,25 @@ class Lbl2Vec:
                 # the list
                 keywordword_vectors = [doc2vec_model.wv[word]
                                        for word in cleaned_keywords_list]
-                similar_docs = doc2vec_model.dv.most_similar(
-                    positive=keywordword_vectors, topn=num_docs)
+                if keywordword_vectors != []:
+                    similar_docs = doc2vec_model.dv.most_similar(
+                        positive=keywordword_vectors, topn=num_docs)
+                else:
+                    return_docs_keys = [0] * num_docs
+                    return_docs_similarity_scores = [0] * num_docs
+                    logger.warning("No keywords found in this document")
+                    return pd.Series([return_docs_keys, return_docs_similarity_scores], index=[
+                        'doc_keys', 'doc_similarity_scores'])
+
             except KeyError as error:
                 error.args = (
                     error.args[0] + " in trained Doc2Vec model. Either replace the keyword from the 'keywords_list' parameter or train a new Doc2Vec model that knows the keyword.",) + error.args[1:]
                 raise
 
+
             doc_keys = [docs[0] for docs in similar_docs]
             doc_scores = [docs[1] for docs in similar_docs]
-
+            # print(doc_scores, min_num_docs)
             # add number of min_num_docs documents if too few documents are
             # chosen by simiarilty threshold alone
             if min_num_docs is not None and doc_scores[min_num_docs] < similarity_threshold and len(
