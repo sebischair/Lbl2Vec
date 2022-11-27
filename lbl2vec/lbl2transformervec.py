@@ -44,10 +44,10 @@ class Lbl2TransformerVec(Lbl2Vec):
     label_names : iterable list of str, default=None
             Custom names can be defined for each label. Parameter values of label names and keywords of the same topic must have the same index. Default is to use generic label names.
 
-    similarity_threshold : float, default=0.28
+    similarity_threshold : float, default=None
             Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embedding.
 
-    similarity_threshold_offset : float, default=0.2
+    similarity_threshold_offset : float, default=0
             Sets similarity threshold to n-similarity_threshold_offset with n = (smiliarity of keyphrase_vector to most similar document_vector).
 
     min_num_docs : int, default=1
@@ -87,7 +87,7 @@ class Lbl2TransformerVec(Lbl2Vec):
             # ToDo: check optimal similarity threshold value/offset
             similarity_threshold: float = None,
             # ToDo: add validation checks for similarity_threshold_offset and add error/warning message in case the offset is larger than the highest label_vector <-> document_vector similarity
-            similarity_threshold_offset: float = 0.2,
+            similarity_threshold_offset: float = 0,
             min_num_docs: int = 1,
             max_num_docs: int = None,
             clean_outliers: bool = False,
@@ -236,9 +236,17 @@ class Lbl2TransformerVec(Lbl2Vec):
             try:
                 # Start ray cluster
                 if self.workers == -1:
-                    ray.init(num_cpus=psutil.cpu_count(logical=True), ignore_reinit_error=True)
+                    if not ray.is_initialized():
+                        # Start ray cluster
+                        ray.init(num_cpus=psutil.cpu_count(logical=True), ignore_reinit_error=True, log_to_driver=False,
+                                 logging_level=logging.ERROR, configure_logging=False)
+                        assert ray.is_initialized()
                 else:
-                    ray.init(num_cpus=self.workers, ignore_reinit_error=True)
+                    if not ray.is_initialized():
+                        # Start ray cluster
+                        ray.init(num_cpus=self.workers, ignore_reinit_error=True, log_to_driver=False,
+                                 logging_level=logging.ERROR, configure_logging=False)
+                        assert ray.is_initialized()
 
                 transformer_model_id = ray.put(self.transformer_model)
                 distributed_transformer_embedding = ray.remote(transformer_embedding)
@@ -250,6 +258,7 @@ class Lbl2TransformerVec(Lbl2Vec):
                      list(self.documents['doc'])])
             finally:
                 ray.shutdown()
+                assert not ray.is_initialized()
         # use single core only to embed document vectors
         else:
             self.documents['doc_vec'] = self.documents['doc'].apply(

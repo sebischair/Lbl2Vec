@@ -13,9 +13,11 @@ from typing import List, Union, Tuple
 import numpy as np
 import pandas as pd
 import psutil
+import ray
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import LocalOutlierFactor
+
+from lbl2vec.utils import _get_doc_label_similarities, centroid
 
 
 class Lbl2Vec:
@@ -26,7 +28,6 @@ class Lbl2Vec:
 
     Parameters
     ----------
-
 
     keywords_list : iterable list of lists with descriptive keywords of type str.
             For each label at least one descriptive keyword has to be added as list of str.
@@ -71,8 +72,11 @@ class Lbl2Vec:
     num_docs : int, optional
             Maximum number of documents to calculate label embedding from. Default is all available documents.
 
-    similarity_threshold : float, optional
+    similarity_threshold : float, default=None
             Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embedding.
+
+    similarity_threshold_offset : float, default=0
+            Sets similarity threshold to n-similarity_threshold_offset with n = (smiliarity of keyphrase_vector to most similar document_vector).
 
     min_num_docs : int, optional
             Minimum number of documents that are used to calculate the label embedding. Adds documents until requirement is fulfilled if simiarilty threshold is choosen too restrictive.
@@ -105,7 +109,7 @@ class Lbl2Vec:
             # ToDo: check optimal similarity threshold value
             similarity_threshold: float = None,
             # ToDo: add validation checks for similarity_threshold_offset and add error/warning message in case the offset is larger than the highest label_vector <-> document_vector similarity
-            similarity_threshold_offset: float = 0.2,
+            similarity_threshold_offset: float = 0,
             min_num_docs: int = 1,
             clean_outliers: bool = False,
             verbose: bool = True):
@@ -131,7 +135,7 @@ class Lbl2Vec:
             raise ValueError(
                 'keywords_list has to be an iterable list of lists with descriptive keywords of type str')
 
-        # ToDo: auto convert keywords to lower case and remove empty keywords
+        # ToDo (optional): auto convert keywords to lower case and remove empty keywords
 
         # init labels DataFrame
         self.labels = pd.DataFrame(list(zip(label_names, keywords_list)), columns=[
@@ -259,7 +263,7 @@ class Lbl2Vec:
     def predict_model_docs(
             self,
             doc_keys: Union[List[int], List[str]] = None,
-            multiprocessing: bool = True) -> pd.DataFrame:
+            multiprocessing: bool = False) -> pd.DataFrame:
         '''
         Computes similarity scores of documents that are used to train the Lbl2Vec model to each label.
 
@@ -270,10 +274,9 @@ class Lbl2Vec:
             Else: only return the similarity scores of training documents with the given keys.
 
         multiprocessing : boolean, optional
-            Whether to use the swifter multiprocessing library during prediction.
-            If True swifter decides based on the predicted processing time whether to use all available workers or just a single core.
-            If False just use a single core and do not print the status/progress bar.
-
+            Whether to use the ray multiprocessing library during prediction.
+            If True, ray uses all available workers for prediction.
+            If False, just use a single core for prediction.
 
         Returns
         -------
@@ -323,7 +326,7 @@ class Lbl2Vec:
     def predict_new_docs(
             self,
             tagged_docs: List[TaggedDocument],
-            multiprocessing: bool = True) -> pd.DataFrame:
+            multiprocessing: bool = False) -> pd.DataFrame:
         '''
         Computes similarity scores of given new documents that are not used to train the Lbl2Vec model to each label.
 
@@ -333,9 +336,9 @@ class Lbl2Vec:
             New documents that are not used to train the model.
 
         multiprocessing : boolean, optional
-            Whether to use the swifter multiprocessing library during prediction.
-            If True swifter decides based on the predicted processing time whether to use all available workers or just a single core.
-            If False just use a single core and do not print the status/progress bar.
+            Whether to use the ray multiprocessing library during prediction.
+            If True, ray uses all available workers for prediction.
+            If False, just use a single core for prediction.
 
         Returns
         -------
@@ -363,11 +366,28 @@ class Lbl2Vec:
 
         self.logger.info('Calculate document embeddings')
 
-        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get document vectors of new documents
         if multiprocessing:
-            labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].swifter.progress_bar(
-                False).apply(lambda row: self.doc2vec_model.infer_vector(doc_words=row))
+            try:
+                if not ray.is_initialized():
+                    # Start ray cluster
+                    ray.init(num_cpus=psutil.cpu_count(logical=True), ignore_reinit_error=True, log_to_driver=False,
+                             logging_level=logging.ERROR, configure_logging=False)
+                    assert ray.is_initialized()
+                # define distributed inference function
+                doc2vec_model_id = ray.put(self.doc2vec_model)
+
+                @ray.remote
+                def infer_vector(doc2vec_model, doc_word_token):
+                    return doc2vec_model.infer_vector(doc_words=doc_word_token)
+
+                labeled_docs['doc_vec'] = ray.get(
+                    [infer_vector.remote(doc2vec_model=doc2vec_model_id, doc_word_token=doc_word_token) for
+                     doc_word_token in list(labeled_docs['doc_word_tokens'])])
+
+            finally:
+                ray.shutdown()
+                assert not ray.is_initialized()
 
         else:
             labeled_docs['doc_vec'] = labeled_docs['doc_word_tokens'].apply(
@@ -387,8 +407,7 @@ class Lbl2Vec:
     def add_lbl_thresholds(
             self,
             lbl_similarities_df: pd.DataFrame,
-            lbl_thresholds: List[Tuple[str, float]],
-            multiprocessing: bool = True) -> pd.DataFrame:
+            lbl_thresholds: List[Tuple[str, float]]) -> pd.DataFrame:
         '''
         Adds threshold column with the threshold value of the most similar classification label.
 
@@ -399,11 +418,6 @@ class Lbl2Vec:
 
         lbl_thresholds : list of tuples
             First tuple element consists of the label name and the second tuple element of the threshold value.
-
-        multiprocessing : boolean, optional
-            Whether to use the swifter multiprocessing library during prediction.
-            If True, swifter decides based on the predicted processing time whether to use all available workers or just a single core.
-            If False, just use a single core and do not print the status/progress bar.
 
         Returns
         -------
@@ -423,15 +437,8 @@ class Lbl2Vec:
             raise ValueError(
                 'The pandas DataFrame must have a first column of document keys, second column of most similar labels, third column of similarity scores of the document to the most similar label and the following columns with the respective labels and the similarity scores of the documents to the labels')
 
-        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
-        # add threshold column with the threshold value of the respective most
-        # similar classification label
-        if multiprocessing:
-            lbl_similarities_df['lbl_threshold'] = lbl_similarities_df['most_similar_label'].swifter.progress_bar(
-                False).apply(lambda x: lbl_thresholds[[element[0] for element in lbl_thresholds].index(x)][1])
-        else:
-            lbl_similarities_df['lbl_threshold'] = lbl_similarities_df['most_similar_label'].apply(
-                lambda x: lbl_thresholds[[element[0] for element in lbl_thresholds].index(x)][1])
+        lbl_similarities_df['lbl_threshold'] = lbl_similarities_df['most_similar_label'].apply(
+            lambda x: lbl_thresholds[[element[0] for element in lbl_thresholds].index(x)][1])
 
         # reorder columns
         first_columns = [
@@ -467,10 +474,10 @@ class Lbl2Vec:
         prediction_confidence_column : str
             Column name for prediction confidence
 
-        multiprocessing : bool, optional
-            Whether to use the swifter multiprocessing library during prediction.
-            If True, swifter decides based on the predicted processing time whether to use all available workers or just a single core.
-            If False, just use a single core and do not print the status/progress bar.
+        multiprocessing : boolean, optional
+            Whether to use the ray multiprocessing library during prediction.
+            If True, ray uses all available workers for prediction.
+            If False, just use a single core for prediction.
 
         Returns
         -------
@@ -479,25 +486,39 @@ class Lbl2Vec:
 
         self.logger.info('Calculate document<->label similarities')
 
-        # ToDo: set swifter.progress_bar(self.verbose) again instead of swifter.progress_bar(False) when swifter resolved the TQDM progress bar issues
         # get similarity scores of documents for each label
         if multiprocessing:
-            labeled_docs[
-                list(
-                    self.labels['label_name'].values) +
-                [prediction_confidence_column]] = labeled_docs['doc_vec'].swifter.progress_bar(
-                False).apply(
-                lambda row: self._get_doc_label_similarities(
-                    labels=self.labels['label_name'],
-                    doc_vector=[row],
-                    label_vectors=self.labels['label_vector_from_docs']))
+            try:
+                if not ray.is_initialized():
+                    # Start ray cluster
+                    ray.init(num_cpus=psutil.cpu_count(logical=True), ignore_reinit_error=True, log_to_driver=False,
+                             logging_level=logging.ERROR, configure_logging=False)
+                    assert ray.is_initialized()
+                label_name_id = ray.put(self.labels['label_name'])
+                label_vector_form_docs_id = ray.put(self.labels['label_vector_from_docs'])
+                distributed_get_doc_label_similarities = ray.remote(_get_doc_label_similarities)
+                labeled_docs[list(self.labels['label_name'].values) + [prediction_confidence_column]] = ray.get([
+                                                                                                                    distributed_get_doc_label_similarities.remote(
+                                                                                                                        labels=label_name_id,
+                                                                                                                        doc_vector=[
+                                                                                                                            vector],
+                                                                                                                        label_vectors=label_vector_form_docs_id)
+                                                                                                                    for
+                                                                                                                    vector
+                                                                                                                    in
+                                                                                                                    list(
+                                                                                                                        labeled_docs[
+                                                                                                                            'doc_vec'])])
+            finally:
+                ray.shutdown()
+                assert not ray.is_initialized()
 
         else:
             labeled_docs[
                 list(
                     self.labels['label_name'].values) +
                 [prediction_confidence_column]] = labeled_docs['doc_vec'].apply(
-                lambda row: self._get_doc_label_similarities(
+                lambda row: _get_doc_label_similarities(
                     labels=self.labels['label_name'],
                     doc_vector=[row],
                     label_vectors=self.labels['label_vector_from_docs']))
@@ -698,76 +719,12 @@ class Lbl2Vec:
         -------
         centroid : `numpy.array`_ centroid of vectors.
         '''
+
         if len(vectors) > 0:
-            vectors = np.array(vectors)
-            number_of_vectors, vector_dims = vectors.shape
-            return np.array([np.sum(vectors[:, i]) /
-                             number_of_vectors for i in range(vector_dims)])
+            vectors = [np.array(vector) for vector in vectors]
+            return centroid(vectors)
         else:
             return []
-
-    def _get_doc_label_similarities(
-            self,
-            labels: List[str],
-            doc_vector: List[float],
-            label_vectors: List[List[float]]) -> pd.Series:
-        '''
-        Computes the similarity scores of a given document vector to given label vectors.
-
-        Parameters
-        ----------
-        labels : list of label names
-
-        doc_vector : list
-            One document vector
-
-        label_vectors : list of label vectors
-
-        Returns
-        -------
-        doc_label_similarities : `pandas.Series`_ with columns of labels and row of similarity scores.
-        '''
-
-        # returns a list of tuples where the first tuple element consists of a
-        # similar label and the second tuple element consists of a similarity
-        # score
-        similarity_tuples = [
-            (labels[i], cosine_similarity(
-                doc_vector, [
-                    label_vectors[i]])[0][0]) for i in range(
-                len(label_vectors))]
-
-        # get prediction confidence
-        confidence = self._prediction_confidence(
-            cos_similarities=[tpl[1] for tpl in similarity_tuples])
-        prediction_confidence_column_name = 'prediction_confidence'
-
-        similarity_tuples.append(
-            (prediction_confidence_column_name, confidence))
-
-        return pd.Series([tpl[1] for tpl in similarity_tuples], index=[
-            tpl[0] for tpl in similarity_tuples])
-
-    def _prediction_confidence(self, cos_similarities: List[float]) -> float:
-        '''
-        Applies the softmax function with temperature scaling factor T to calibrate predictions for an optimized confidence probability of a labeling.
-
-        Parameters
-        ----------
-        cos_similarities : list of floats with cosine similarities of a document to each label/class embedding
-
-        Returns
-        -------
-        confidence: float
-            Confidence of the prediction/labeling within the value range [0,1].
-        '''
-        # scaling parameter
-        T = (1 / 20)
-
-        # apply the temperature scaled softmax transformation to each cosine
-        # similarity value and return the maximum of the transformed values
-        return max(np.exp(np.array(cos_similarities) / T) /
-                   np.sum(np.exp(np.array(cos_similarities) / T)))
 
     def save(self, filepath: str):
         '''
