@@ -9,8 +9,10 @@ Lbl2Vec
 
 Lbl2Vec is an algorithm for **unsupervised document classification** and **unsupervised document retrieval.** It
 automatically generates jointly embedded label, document and word vectors and returns documents of topics modeled by
-manually predefined keywords. This package includes **two different model types**. The plain **Lbl2Vec model uses
-Doc2Vec**, whereas **Lbl2TransformerVec uses transformer-based language models** to create the embeddings. Once you
+manually predefined keywords. This package includes **two different model types**. The plain **[Lbl2Vec](#lbl2vec) model
+uses
+Doc2Vec**, whereas **[Lbl2TransformerVec](#lbl2transformervec) uses transformer-based language models** to create the
+embeddings. Once you
 train a model you can:
 
 * Classify documents as related to one of the predefined topics.
@@ -40,12 +42,12 @@ found [here](https://towardsdatascience.com/unsupervised-text-classification-wit
 
 1. [How does it work?](#how-does-it-work)
 2. [Installation](#installation)
-3. [Usage](#usage)
-   4. [Model Training](#model-training)
-      1. [Lbl2Vec](#lbl2vec)
-      2. [Lbl2TransformerVec](#lbl2transformervec)
-   3. [Document prediction](#document-prediction)
-   4. [Save and load models](#save-and-load-models)
+    3. [Usage](#usage)
+        4. [Model Training](#model-training)
+            5. [Lbl2Vec](#lbl2vec)
+            6. [Lbl2TransformerVec](#lbl2transformervec)
+        7. [Document prediction](#document-prediction)
+        8. [Save and load models](#save-and-load-models)
 4. [Citation information](#citation-information)
 
 <!--te-->
@@ -117,6 +119,8 @@ pip install lbl2vec
 
 # Usage
 
+[Back to Table of Contents](#toc)
+
 For detailed information visit the [Lbl2Vec API Guide](https://lbl2vec.readthedocs.io/en/latest/api.html#) and
 the [examples](https://github.com/sebischair/Lbl2Vec/tree/main/examples).
 
@@ -127,6 +131,8 @@ the [examples](https://github.com/sebischair/Lbl2Vec/tree/main/examples).
 <a name="#lbl2vec"/></a>
 
 ### Lbl2Vec
+
+[Back to Table of Contents](#toc)
 
 > Lbl2Vec learns word vectors, document vectors and label vectors using Doc2Vec during training.
 
@@ -181,6 +187,8 @@ model.fit()
 <a name="#lbl2transformervec"/></a>
 
 ### Lbl2TransformerVec
+
+[Back to Table of Contents](#toc)
 
 > Lbl2TransformerVec learns word vectors, document vectors and label vectors using transformer-based language models
 > during training.
