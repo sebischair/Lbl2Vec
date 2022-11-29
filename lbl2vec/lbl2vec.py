@@ -73,7 +73,7 @@ class Lbl2Vec:
             Maximum number of documents to calculate label embedding from. Default is all available documents.
 
     similarity_threshold : float, default=None
-            Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embedding.
+            Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embeddings.
 
     similarity_threshold_offset : float, default=0
             Sets similarity threshold to n-similarity_threshold_offset with n = (smiliarity of keyphrase_vector to most similar document_vector).

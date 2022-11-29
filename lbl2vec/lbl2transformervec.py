@@ -39,13 +39,13 @@ class Lbl2TransformerVec(Lbl2Vec):
             Iterable list of text documents
 
     transformer_model : Union[`SentenceTransformer`_, transformers.AutoModel], default=SentenceTransformer('all-MiniLM-L6-v2')
-            Transformer model used to embed the label and document.
+            Transformer model used to embed the labels, documents and keywords.
 
     label_names : iterable list of str, default=None
             Custom names can be defined for each label. Parameter values of label names and keywords of the same topic must have the same index. Default is to use generic label names.
 
     similarity_threshold : float, default=None
-            Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embedding.
+            Only documents with a higher similarity to the respective description keywords than this threshold are used to calculate the label embeddings.
 
     similarity_threshold_offset : float, default=0
             Sets similarity threshold to n-similarity_threshold_offset with n = (smiliarity of keyphrase_vector to most similar document_vector).
