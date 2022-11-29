@@ -9,9 +9,9 @@ Lbl2Vec
 
 Lbl2Vec is an algorithm for **unsupervised document classification** and **unsupervised document retrieval.** It
 automatically generates jointly embedded label, document and word vectors and returns documents of topics modeled by
-manually predefined keywords. This package includes **two different model types**. The plain **[Lbl2Vec](#lbl2vec) model
+manually predefined keywords. This package includes **two different model types**. The plain **[Lbl2Vec](#lbl2vec-model) model
 uses
-Doc2Vec**, whereas **[Lbl2TransformerVec](#lbl2transformervec) uses transformer-based language models** to create the
+Doc2Vec**, whereas **[Lbl2TransformerVec](#lbl2transformervec-model) uses transformer-based language models** to create the
 embeddings. Once you
 train a model you can:
 
@@ -42,12 +42,12 @@ found [here](https://towardsdatascience.com/unsupervised-text-classification-wit
 
 1. [How does it work?](#how-does-it-work)
 2. [Installation](#installation)
-    3. [Usage](#usage)
-        4. [Model Training](#model-training)
-            5. [Lbl2Vec](#lbl2vec)
-            6. [Lbl2TransformerVec](#lbl2transformervec)
-        7. [Document prediction](#document-prediction)
-        8. [Save and load models](#save-and-load-models)
+3. [Usage](#usage)
+   1. [Model Training](#model-training)
+      1. [Lbl2Vec](#lbl2vec-model)
+      2. [Lbl2TransformerVec](#lbl2transformervec-model)
+   2. [Document prediction](#document-prediction)
+   3. [Save and load models](#save-and-load-models)
 4. [Citation information](#citation-information)
 
 <!--te-->
@@ -128,9 +128,9 @@ the [examples](https://github.com/sebischair/Lbl2Vec/tree/main/examples).
 
 ## Model Training
 
-<a name="#lbl2vec"/></a>
+<a name="#lbl2vec-model"/></a>
 
-### Lbl2Vec
+### Lbl2Vec model
 
 [Back to Table of Contents](#toc)
 
@@ -184,9 +184,9 @@ model.fit()
   parameter is defined, `tagged_documents` parameter has to be None. In order to get optimal Lbl2Vec results the given
   Doc2Vec model should be trained with the parameters "dbow_words=1" and "dm=0".
 
-<a name="#lbl2transformervec"/></a>
+<a name="#lbl2transformervec-model"/></a>
 
-### Lbl2TransformerVec
+### Lbl2TransformerVec model
 
 [Back to Table of Contents](#toc)
 
