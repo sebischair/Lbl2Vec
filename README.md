@@ -19,8 +19,8 @@ train a model you can:
 * Get similarity scores for documents to each predefined topic.
 * Get most similar predefined topic of documents.
 
-See the papers introducing [Lbl2Vec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058)
-and [Lbl2TransformerVec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058) for more details on how it
+See the papers introducing [Lbl2Vec](https://arxiv.org/abs/2210.06023)
+and [Lbl2TransformerVec](https://arxiv.org/abs/2211.16285) for more details on how it
 works.
 
 Corresponding Medium post describing the use of Lbl2Vec for unsupervised text classification can be
@@ -308,11 +308,11 @@ model = Lbl2Vec.load('model_name')
 [Back to Table of Contents](#toc)
 
 When citing [Lbl2Vec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058)
-or [Lbl2TransformerVec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058) in academic papers and
+or [Lbl2TransformerVec](https://arxiv.org/abs/2211.16285) in academic papers and
 theses, please use the following BibTeX entries:
 
 ``` 
-@conference{webist21,
+@conference{schopf_etal_webist21,
 author={Tim Schopf and Daniel Braun and Florian Matthes},
 title={Lbl2Vec: An Embedding-based Approach for Unsupervised Document Retrieval on Predefined Topics},
 booktitle={Proceedings of the 17th International Conference on Web Information Systems and Technologies - WEBIST,},
@@ -323,5 +323,18 @@ organization={INSTICC},
 doi={10.5220/0010710300003058},
 isbn={978-989-758-536-4},
 issn={2184-3252},
+}
+``` 
+``` 
+@inproceedings{schopf_etal_nlpir22,
+author = {Schopf, Tim and Braun, Daniel and Matthes, Florian},
+title = {Evaluating Unsupervised Text Classification: Zero-shot and Similarity-based Approaches},
+year = {2023},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+booktitle = {2022 6th International Conference on Natural Language Processing and Information Retrieval (NLPIR)},
+keywords = {Natural Language Processing, Unsupervised Text Classification, Zero-shot Text Classification},
+location = {Bangkok, Thailand},
+series = {NLPIR 2022}
 }
 ``` 
