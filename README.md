@@ -1,8 +1,11 @@
 [![Python version](https://img.shields.io/badge/python-%3E%3D3.8-orange)](https://pypi.org/project/lbl2vec/)
 [![Pypi](https://img.shields.io/pypi/v/lbl2vec.svg)](https://pypi.org/project/lbl2vec/)
+[![Build](https://img.shields.io/github/actions/workflow/status/sebischair/Lbl2Vec/testing.yml?branch=main)](https://pypi.org/project/lbl2vec/)
 [![License](https://img.shields.io/pypi/l/lbl2vec.svg)](https://github.com/sebischair/Lbl2Vec/blob/main/LICENSE)
 [![Documentation Status](https://readthedocs.org/projects/lbl2vec/badge/?version=latest)](https://lbl2vec.readthedocs.io/en/latest/?badge=latest)
 [![DOI:10.5220/0010710300003058](https://zenodo.org/badge/DOI/10.5220/0010710300003058.svg)](https://doi.org/10.5220/0010710300003058)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/lbl2vec-an-embedding-based-approach-for/unsupervised-text-classification-on-1)](https://paperswithcode.com/sota/unsupervised-text-classification-on-1?p=lbl2vec-an-embedding-based-approach-for)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/lbl2vec-an-embedding-based-approach-for/unsupervised-text-classification-on-ag-news)](https://paperswithcode.com/sota/unsupervised-text-classification-on-ag-news?p=lbl2vec-an-embedding-based-approach-for)
 
 Lbl2Vec
 ======= 
