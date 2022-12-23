@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+import ray
 from gensim.models.doc2vec import TaggedDocument
 from gensim.parsing.preprocessing import strip_tags
 from gensim.utils import simple_preprocess
@@ -76,6 +77,7 @@ def test_lbl2vec():
 
 
 def test_lbltransformer2vec_sbert_cpu():
+
     labels['class_name'] = labels['keywords'].apply(lambda row: ' and '.join(row))
 
     # add data set type column
@@ -113,6 +115,8 @@ def test_lbltransformer2vec_sbert_cpu():
     assert model_docs_lbl_similarities.shape == (3980, 7)
 
 
+ray.shutdown()
+
 def test_lbltransformer2vec_simcse_cpu():
     labels['class_name'] = labels['keywords'].apply(lambda row: ' and '.join(row))
 
@@ -144,7 +148,7 @@ def test_lbltransformer2vec_simcse_cpu():
     # init model with parameters
     lbl2vec_model = Lbl2TransformerVec(transformer_model=transformer_model, keywords_list=list(labels['keywords']),
                                        documents=newsgroup_full_corpus['article'],
-                                       label_names=list(labels['class_name']), min_num_docs=100)
+                                       label_names=list(labels['class_name']), min_num_docs=100, workers=1)
 
     # train model
     lbl2vec_model.fit()
