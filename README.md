@@ -9,9 +9,11 @@ Lbl2Vec
 
 Lbl2Vec is an algorithm for **unsupervised document classification** and **unsupervised document retrieval.** It
 automatically generates jointly embedded label, document and word vectors and returns documents of topics modeled by
-manually predefined keywords. This package includes **two different model types**. The plain **[Lbl2Vec](#lbl2vec-model) model
+manually predefined keywords. This package includes **two different model types**. The plain **[Lbl2Vec](#lbl2vec-model)
+model
 uses
-Doc2Vec**, whereas **[Lbl2TransformerVec](#lbl2transformervec-model) uses transformer-based language models** to create the
+Doc2Vec**, whereas **[Lbl2TransformerVec](#lbl2transformervec-model) uses transformer-based language models** to create
+the
 embeddings. Once you
 train a model you can:
 
@@ -43,11 +45,11 @@ found [here](https://towardsdatascience.com/unsupervised-text-classification-wit
 1. [How does it work?](#how-does-it-work)
 2. [Installation](#installation)
 3. [Usage](#usage)
-   1. [Model Training](#model-training)
-      1. [Lbl2Vec](#lbl2vec-model)
-      2. [Lbl2TransformerVec](#lbl2transformervec-model)
-   2. [Document prediction](#document-prediction)
-   3. [Save and load models](#save-and-load-models)
+    1. [Model Training](#model-training)
+        1. [Lbl2Vec](#lbl2vec-model)
+        2. [Lbl2TransformerVec](#lbl2transformervec-model)
+    2. [Document prediction](#document-prediction)
+    3. [Save and load models](#save-and-load-models)
 4. [Citation information](#citation-information)
 
 <!--te-->
@@ -70,28 +72,28 @@ similarities.
 > Domain knowledge is needed to define keywords that describe topics and are semantically similar to each other within
 > the topics.
 
-| Basketball     | Soccer        | Baseball   |
-| :-------------:|:-------------:|:----------:|
-| NBA            | FIFA          | MLB        |
-| Basketball     | Soccer        | Baseball   |
-| LeBron         | Messi         | Ruth       |
-| ...            | ...           | ...        |
+| Basketball | Soccer | Baseball |
+|:----------:|:------:|:--------:|
+|    NBA     |  FIFA  |   MLB    |
+| Basketball | Soccer | Baseball |
+|   LeBron   | Messi  |   Ruth   |
+|    ...     |  ...   |   ...    |
 
 **1. Create jointly embedded document and word vectors
 using [Doc2Vec](https://radimrehurek.com/gensim/models/doc2vec.html "Gensim Doc2Vec")
 , [Sentence-Transformers](https://www.sbert.net/ "SBERT Documentation"),
 or [SimCSE](https://github.com/princeton-nlp/SimCSE "SimCSE GitHub").**
->Documents will be placed close to other similar documents and close to the most distinguishing words.
+> Documents will be placed close to other similar documents and close to the most distinguishing words.
 
 ![](https://raw.githubusercontent.com/sebischair/Lbl2Vec/main/images/Doc2Vec_example.png)
 
 **2. Find document vectors that are similar to the keyword vectors of each topic.**
->Each color represents a different topic described by the respective keywords. 
+> Each color represents a different topic described by the respective keywords.
 
 ![](https://raw.githubusercontent.com/sebischair/Lbl2Vec/main/images/Document_assignment_example.png)
 
 **3. Clean outlier document vectors for each topic.**
->Red documents are outlier vectors that are removed and do not get used for calculating the label vector. 
+> Red documents are outlier vectors that are removed and do not get used for calculating the label vector.
 
 ![](https://raw.githubusercontent.com/sebischair/Lbl2Vec/main/images/Outlier_cleaning_example.png)
 
@@ -121,7 +123,7 @@ pip install lbl2vec
 
 [Back to Table of Contents](#toc)
 
-For detailed information visit the [Lbl2Vec API Guide](https://lbl2vec.readthedocs.io/en/latest/api.html#) and
+For detailed information visit the [API Guide](https://lbl2vec.readthedocs.io/en/latest/api.html#) and
 the [examples](https://github.com/sebischair/Lbl2Vec/tree/main/examples).
 
 <a name="#model-training"/></a>
@@ -191,7 +193,15 @@ model.fit()
 [Back to Table of Contents](#toc)
 
 > Lbl2TransformerVec learns word vectors, document vectors and label vectors using transformer-based language models
-> during training.
+> during training. Using state-of-the-art transformer embeddings may not only yield to better predictions but also
+> eliminates the issue of unknown keywords during model training. While the Doc2Vec-based model can only use keywords
+> that
+> Lbl2Vec has seen during training, the transformer-based Lbl2TransformerVec model can learn label vectors from any set
+> of
+> keywords. That is because transformer vocabularies consist of individual characters, subwords, and words, allowing
+> transformers to effectively represent every word in a sentence. This eliminates the out-of-vocabulary scenario.
+> However,
+> using transformers instead of Doc2Vec is much more computationally expensive, especially if no GPU is available.
 
 #### Train new Lbl2TransformerVec model from scratch using the default transformer-embedding model
 
@@ -205,7 +215,7 @@ model = Lbl2TransformerVec(keywords_list=listdescriptive_keywords, documents=doc
 model.fit()
 ```
 
-#### Train Lbl2TransformerVec model using an arbitrary [sentence-transformers](https://www.sbert.net/ "SBERT Documentation") embedding model
+#### Train Lbl2TransformerVec model using an arbitrary [Sentence-Transformers](https://www.sbert.net/ "SBERT Documentation") embedding model
 
 ```python
 from lbl2vec import Lbl2TransformerVec
@@ -269,7 +279,9 @@ model.predict_model_docs()
   train the Lbl2Vec model. Else: only return the similarity scores of training documents with the given keys.
 
 #### Predict label similarities for new documents that are not used for training
->Computes the similarity scores for each given and previously unknown document vector to each of the label vectors from the model.
+
+> Computes the similarity scores for each given and previously unknown document vector to each of the label vectors from
+> the model.
 
 ```python
 # get similarity scores for each new document from trained model
@@ -325,6 +337,7 @@ isbn={978-989-758-536-4},
 issn={2184-3252},
 }
 ``` 
+
 ``` 
 @inproceedings{schopf_etal_nlpir22,
 author = {Schopf, Tim and Braun, Daniel and Matthes, Florian},

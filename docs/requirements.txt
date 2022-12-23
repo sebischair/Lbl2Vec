@@ -21,3 +21,4 @@ sentence_transformers>=2.2.2
 transformers>=4.24.0
 torch>=1.13
 ray>=2.1.0
+typing
