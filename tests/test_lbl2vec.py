@@ -1,7 +1,6 @@
 import re
 
 import pandas as pd
-import ray
 from gensim.models.doc2vec import TaggedDocument
 from gensim.parsing.preprocessing import strip_tags
 from gensim.utils import simple_preprocess
@@ -114,8 +113,6 @@ def test_lbltransformer2vec_sbert_cpu():
 
     assert model_docs_lbl_similarities.shape == (3980, 7)
 
-
-ray.shutdown()
 
 def test_lbltransformer2vec_simcse_cpu():
     labels['class_name'] = labels['keywords'].apply(lambda row: ' and '.join(row))
