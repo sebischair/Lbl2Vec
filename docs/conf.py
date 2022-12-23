@@ -1,6 +1,3 @@
-import sphinx_rtd_theme
-from recommonmark.parser import CommonMarkParser
-
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -15,6 +12,8 @@ from recommonmark.parser import CommonMarkParser
 
 import os
 import sys
+from distutils.util import convert_path
+
 sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
@@ -23,9 +22,11 @@ project = 'Lbl2Vec'
 copyright = '2021, Tim Schopf'
 author = 'Tim Schopf'
 
-# The full version, including alpha/beta/rc tags
-release = '1.0.1'
-
+main_ns = {}
+ver_path = convert_path('../lbl2vec/_version.py')
+with open(ver_path) as ver_file:
+    exec(ver_file.read(), main_ns)
+release = main_ns['__version__']
 
 # -- General configuration ---------------------------------------------------
 
@@ -33,8 +34,8 @@ release = '1.0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-'sphinx_rtd_theme',
-'recommonmark',
+    'sphinx_rtd_theme',
+    'recommonmark',
 'sphinx.ext.autodoc',
 'sphinx.ext.napoleon',
 'sphinx_markdown_tables',

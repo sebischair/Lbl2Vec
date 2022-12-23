@@ -13,7 +13,7 @@ Welcome to Lbl2Vec's documentation!
    Lbl2Vec
 
 .. toctree::
-   :caption: API Giude:
+   :caption: API Guide:
 
    api
 
