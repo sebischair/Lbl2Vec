@@ -322,8 +322,7 @@ model = Lbl2Vec.load('model_name')
 
 [Back to Table of Contents](#toc)
 
-When citing [Lbl2Vec](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058)
-or [Lbl2TransformerVec](https://arxiv.org/abs/2211.16285) in academic papers and
+When citing Lbl2Vec [[1](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058),[2](https://doi.org/10.1007/978-3-031-24197-0_4)] or Lbl2TransformerVec [[3](https://arxiv.org/abs/2211.16285)] in academic papers and
 theses, please use the following BibTeX entries:
 
 ``` 
@@ -341,6 +340,25 @@ issn={2184-3252},
 }
 ``` 
 
+```
+@InProceedings{10.1007/978-3-031-24197-0_4,
+author="Schopf, Tim
+and Braun, Daniel
+and Matthes, Florian",
+editor="Marchiori, Massimo
+and Dom{\'i}nguez Mayo, Francisco Jos{\'e}
+and Filipe, Joaquim",
+title="Semantic Label Representations with Lbl2Vec: A Similarity-Based Approach for Unsupervised Text Classification",
+booktitle="Web Information Systems and Technologies",
+year="2023",
+publisher="Springer International Publishing",
+address="Cham",
+pages="59--73",
+abstract="In this paper, we evaluate the Lbl2Vec approach for unsupervised text document classification. Lbl2Vec requires only a small number of keywords describing the respective classes to create semantic label representations. For classification, Lbl2Vec uses cosine similarities between label and document representations, but no annotation information. We show that Lbl2Vec significantly outperforms common unsupervised text classification approaches and a widely used zero-shot text classification approach. Furthermore, we show that using more precise keywords can significantly improve the classification results of similarity-based text classification approaches.",
+isbn="978-3-031-24197-0"
+}
+``` 
+
 ``` 
 @inproceedings{schopf_etal_nlpir22,
 author = {Schopf, Tim and Braun, Daniel and Matthes, Florian},
@@ -354,3 +372,7 @@ location = {Bangkok, Thailand},
 series = {NLPIR 2022}
 }
 ``` 
+
+
+
+
