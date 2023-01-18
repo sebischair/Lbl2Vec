@@ -29,7 +29,9 @@ and [Lbl2TransformerVec](https://arxiv.org/abs/2211.16285) for more details on h
 works.
 
 Corresponding Medium post describing the use of Lbl2Vec for unsupervised text classification can be
-found [here](https://towardsdatascience.com/unsupervised-text-classification-with-lbl2vec-6c5e040354de).
+found [here](https://towardsdatascience.com/unsupervised-text-classification-with-lbl2vec-6c5e040354de). 
+
+A Medium post evaluating Lbl2Vec and Lbl2TransformerVec against zero-shot approaches can be found [here](https://medium.com/towards-data-science/zero-shot-vs-similarity-based-text-classification-83115d9879f5).
 
 # Benefits
 
