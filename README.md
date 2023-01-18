@@ -24,8 +24,8 @@ train a model you can:
 * Get similarity scores for documents to each predefined topic.
 * Get most similar predefined topic of documents.
 
-See the papers introducing [Lbl2Vec](https://arxiv.org/abs/2210.06023)
-and [Lbl2TransformerVec](https://arxiv.org/abs/2211.16285) for more details on how it
+See the papers presenting Lbl2Vec [[1](https://www.scitepress.org/Link.aspx?doi=10.5220/0010710300003058),[2](https://doi.org/10.1007/978-3-031-24197-0_4)]
+and Lbl2TransformerVec [[3](https://arxiv.org/abs/2211.16285)] for more details on how it
 works.
 
 Corresponding Medium post describing the use of Lbl2Vec for unsupervised text classification can be
