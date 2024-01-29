@@ -275,7 +275,7 @@ class Lbl2TransformerVec(Lbl2Vec):
 
         if self.clean_outliers:
             # clean document outlier with LOF
-            self.labels['cleaned_doc_vectors'] = self.labels['doc_vectors'].apply(lambda row: centroid(vectors=row))
+            self.labels['cleaned_doc_vectors'] = self.labels['doc_vectors'].apply(lambda row: self._remove_outlier_docs(document_vectors=row))
 
             # calculate centroid of document vectors as new label vector
             self.labels['label_vector_from_docs'] = self.labels['cleaned_doc_vectors'].apply(
